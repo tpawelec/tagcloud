@@ -1,3 +1,12 @@
+/*
+TODO:
+
+- usuwanie tagów z selectedTags
+- poprawić enter (containsTag?)
+- wyrenderować wielkość czcionek po dodaniu taga (kolejny przycisk "Wyślij"?)
+- xml albo json
+*/
+
 const hashtagContainer = document.querySelector("#hashContainer");
 const tagInput = document.querySelector("#tagInput");
 const addButton = document.querySelector("#addButton");
@@ -61,7 +70,7 @@ function addNewTag(newTag) {
   }
 }
 
-function constainsTag(tag, tagArray) {
+function containsTag(tag, tagArray) {
   let contains = false;
   contains = tagArray.forEach((tagElement) => {
     if(tagElement.tag == tag) {
@@ -83,23 +92,22 @@ function constainsTag(tag, tagArray) {
     1. Create array with values that match given regexp created with letters typed by user
     2. Iterate over array above and creates <li> nodes with higlighted letters that are typed
 */
-function displayMatches() {
-
+function displayMatches(evt) {
   let html = '';
   let matchArray = [];
-  if(event.which == 8 && this.value.length == 0) {
+  if(evt.which == 8 && tagInput.value.length == 0) {
     html = '';
-  } else if(event.which == 13) {
-    console.log(constainsTag(this.value, hashtags));
-    if(constainsTag(this.value, hashtags)) {
-      console.log(hashtags.indexOf(this.value))
+  } else if(evt.which == 13) {
+    console.log(containsTag(tagInput.value, hashtags));
+    if(containsTag(tagInput.value, hashtags)) {
+      console.log(hashtags.indexOf(tagInput.value))
       //addNewTag(this.value);
     }
   } else {
-    matchArray = findMatches(this.value, hashtags);
+    matchArray = findMatches(tagInput.value, hashtags);
     html = matchArray.map(tag => {
-      const regex = new RegExp(this.value, 'gi');
-      const tagName = tag.tag.replace(regex, `<span class="suggestions__tag-name--hl">${this.value}</span>`);
+      const regex = new RegExp(tagInput.value, 'gi');
+      const tagName = tag.tag.replace(regex, `<span class="suggestions__tag-name--hl">${tagInput.value}</span>`);
       return `<li class="suggestions__tag-name" id="tag-${tag.tag}">
                 ${tagName}
               </li>`
@@ -111,12 +119,14 @@ function displayMatches() {
 
 generateHashCloud();
 
-tagInput.addEventListener('change', displayMatches);
-tagInput.addEventListener('keyup', displayMatches);
+tagInput.addEventListener('change', (e) => displayMatches(e));
+tagInput.addEventListener('keyup', (e) => displayMatches(e));
 addButton.addEventListener('click', () => {addNewTag(tagInput.value)});
 document.addEventListener('mouseup', (e) => {
   if(e.target.classList.contains("close")) {
     e.target.parentNode.remove();
+    selectedTags = selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
+    console.log(selectedTags);
   } else if(e.target.classList.contains("suggestions__tag-name")) {
     if(selectedTags.indexOf(e.target.innerText) == -1) {
       const html = `<p class="tag-element" id="selectedList-${e.target.innerText}">${e.target.innerText.toLowerCase()}<span class="close">&times</span></p>`;
@@ -124,6 +134,7 @@ document.addEventListener('mouseup', (e) => {
       selectedTags.push(e.target.innerText.toLowerCase());
       suggestions.innerHTML = '';
     }
+    console.log(selectedTags);
   }
 
 })
