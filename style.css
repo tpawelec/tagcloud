@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .hashtags {
+    height: 400px;
+    width: 450px;
+    border: 1px solid #000;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+  }
+  
+  .hashtags__tag {
+    display: inline-block;
+    margin: 7px;
+    height: auto;
+    color: #ef0255;
+    font-weight: 700;
+    font-size: attr(data-fontsize px);
+    text-decoration: none;
+  }
+
+  .hashtags__tag--size14 { font-size: 14px; }
+  .hashtags__tag--size15 { font-size: 15px; }
+  .hashtags__tag--size16 { font-size: 16px; }
+  .hashtags__tag--size17 { font-size: 17px; }
+  .hashtags__tag--size18 { font-size: 18px; }
+  .hashtags__tag--size19 { font-size: 19px; }
+  .hashtags__tag--size20 { font-size: 20px; }
+  .hashtags__tag--size21 { font-size: 21px; }
+  .hashtags__tag--size22 { font-size: 22px; }
+  .hashtags__tag--size23 { font-size: 23px; }
+  .hashtags__tag--size24 { font-size: 24px; }
+  .hashtags__tag--size25 { font-size: 25px; }
+  .hashtags__tag--size26 { font-size: 26px; }
+  .hashtags__tag--size27 { font-size: 27px; }
+  .hashtags__tag--size28 { font-size: 28px; }
+  .hashtags__tag--size29 { font-size: 29px; }
+  .hashtags__tag--size30 { font-size: 30px; }
+
+  .tag-add {
+    padding-left: 30px;
+  }
+  .tag-add__input-tag {
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 24px;
+    padding: 5px;
+}
+
+.tag-add__input-tag:focus {
+  outline: none;
+}
+
+.tag-add__btn {
+  background-color: #0080c0;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  padding: 10px;
+}
+
+.tag-add__suggestions {
+  list-style-type: none;
+  width: 310px;
+}
+.suggestions__tag-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+    min-width: 310px;
+}
+
+.suggestions__tag-name:hover {
+  background-color: #dbdbdb
+}
+
+.suggestions__tag-name--hl {
+  font-weight: 700;
+}
+
+.tag-element {
+  padding: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  background-color: #d2d2d2;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.close {
+  font-weight: 900;
+  margin-left: 15px;
+  cursor: pointer;
+}
