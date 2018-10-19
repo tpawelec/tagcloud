@@ -60,6 +60,7 @@ function findMatches(tagToMatch, hashtags) {
 */
 function addNewTag(newTag) {
   let html = '';
+  tagInput.value = '';
   if(selectedTags.indexOf(newTag) == -1) {
     hashtags.push({tag: newTag, number: 1});
     generateHashCloud();
@@ -125,9 +126,10 @@ addButton.addEventListener('click', () => {addNewTag(tagInput.value)});
 document.addEventListener('mouseup', (e) => {
   if(e.target.classList.contains("close")) {
     e.target.parentNode.remove();
-    selectedTags = selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
+    selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
     console.log(selectedTags);
   } else if(e.target.classList.contains("suggestions__tag-name")) {
+    tagInput.value = '';
     if(selectedTags.indexOf(e.target.innerText) == -1) {
       const html = `<p class="tag-element" id="selectedList-${e.target.innerText}">${e.target.innerText.toLowerCase()}<span class="close">&times</span></p>`;
       tagList.innerHTML += html;
