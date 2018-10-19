@@ -1,8 +1,6 @@
 /*
 TODO:
 
-- usuwanie tagów z selectedTags
-- poprawić enter (containsTag?)
 - wyrenderować wielkość czcionek po dodaniu taga (kolejny przycisk "Wyślij"?)
 - xml albo json
 */
@@ -48,6 +46,16 @@ function findMatches(tagToMatch, hashtags) {
   })
 }
 
+function addExistingTag(tagName) {
+  const html = `<p class="tag-element" id="selectedList-${tagName}">${tagName}<span class="close">&times</span></p>`;
+  tagList.innerHTML += html;
+  selectedTags.push(tagName);
+  suggestions.innerHTML = '';
+  tagInput.value = '';
+
+  console.log(selectedTags);
+}
+
 /*
   Function for new tag, that isn't in "database".
   1. Check if tag isn't already used
@@ -63,19 +71,18 @@ function addNewTag(newTag) {
   tagInput.value = '';
   if(selectedTags.indexOf(newTag) == -1) {
     hashtags.push({tag: newTag, number: 1});
-    generateHashCloud();
-    html = `<p class="tag-element" id="selectedList-${newTag}">${newTag.toLowerCase()}<span class="close">&times</span></p>`;
-    tagList.innerHTML += html;
-    selectedTags.push(newTag.toLowerCase());
-    tagInput.value = '';
+    addExistingTag(newTag.toLowerCase());
   }
+
+  console.log(selectedTags);
 }
+
 
 function containsTag(tag, tagArray) {
   let contains = false;
-  contains = tagArray.forEach((tagElement) => {
+  tagArray.forEach((tagElement) => {
     if(tagElement.tag == tag) {
-      return true;
+      contains = true;
     }
   })
 
@@ -99,10 +106,10 @@ function displayMatches(evt) {
   if(evt.which == 8 && tagInput.value.length == 0) {
     html = '';
   } else if(evt.which == 13) {
-    console.log(containsTag(tagInput.value, hashtags));
-    if(containsTag(tagInput.value, hashtags)) {
-      console.log(hashtags.indexOf(tagInput.value))
-      //addNewTag(this.value);
+    if(!containsTag(tagInput.value, hashtags)) {
+      addNewTag(tagInput.value.toLowerCase());
+    } else {
+      addExistingTag(tagInput.value.toLowerCase())
     }
   } else {
     matchArray = findMatches(tagInput.value, hashtags);
@@ -122,21 +129,28 @@ generateHashCloud();
 
 tagInput.addEventListener('change', (e) => displayMatches(e));
 tagInput.addEventListener('keyup', (e) => displayMatches(e));
-addButton.addEventListener('click', () => {addNewTag(tagInput.value)});
+addButton.addEventListener('click', () => {
+  if(containsTag(tagInput.value, hashtags)) {
+    addExistingTag(tagInput.value.toLowerCase())
+  } else {
+    addNewTag(tagInput.value);
+  }
+})
 document.addEventListener('mouseup', (e) => {
   if(e.target.classList.contains("close")) {
     e.target.parentNode.remove();
     selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
     console.log(selectedTags);
   } else if(e.target.classList.contains("suggestions__tag-name")) {
-    tagInput.value = '';
+    console.log("aasd")
     if(selectedTags.indexOf(e.target.innerText) == -1) {
-      const html = `<p class="tag-element" id="selectedList-${e.target.innerText}">${e.target.innerText.toLowerCase()}<span class="close">&times</span></p>`;
+      /* const html = `<p class="tag-element" id="selectedList-${e.target.innerText}">${e.target.innerText.toLowerCase()}<span class="close">&times</span></p>`;
       tagList.innerHTML += html;
       selectedTags.push(e.target.innerText.toLowerCase());
-      suggestions.innerHTML = '';
+      suggestions.innerHTML = ''; */
+      addExistingTag(e.target.innerText.toLowerCase());
     }
-    console.log(selectedTags);
+    tagInput.value = '';
   }
 
 })
