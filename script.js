@@ -1,13 +1,14 @@
 /*
 TODO:
 
-- wyrenderować wielkość czcionek po dodaniu taga (kolejny przycisk "Wyślij"?)
+- zwiększyć ilość wystąpienia tagu po dodaniu
 - xml albo json
 */
 
 const hashtagContainer = document.querySelector("#hashContainer");
 const tagInput = document.querySelector("#tagInput");
 const addButton = document.querySelector("#addButton");
+const sendButton = document.querySelector("#sendButton");
 const suggestions = document.querySelector("#suggestions");
 const tagList = document.querySelector("#tagList");
 
@@ -135,7 +136,7 @@ addButton.addEventListener('click', () => {
   } else {
     addNewTag(tagInput.value);
   }
-})
+});
 document.addEventListener('mouseup', (e) => {
   if(e.target.classList.contains("close")) {
     e.target.parentNode.remove();
@@ -153,4 +154,8 @@ document.addEventListener('mouseup', (e) => {
     tagInput.value = '';
   }
 
+});
+sendButton.addEventListener('click', () => {
+  tagList.innerHTML = '';
+  generateHashCloud();
 })
