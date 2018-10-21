@@ -18,6 +18,30 @@ let htmlContent = '';
 let selectedTags = [];
 hashtagContainer.innerHTML = "";
 
+let hashtags;
+
+/*
+  Load local json file
+*/
+function loadJSON(callback) {
+  let xmlObj = new XMLHttpRequest();
+  xmlObj.overrideMimeType("application/json");
+  xmlObj.open('GET', 'tags.json', false);
+  xmlObj.onreadystatechange = _ => {
+    if(xmlObj.readyState == 4 && xmlObj.status == "200") {
+      callback(xmlObj.responseText);
+    }
+  };
+  xmlObj.send(null);
+}
+
+loadJSON((resp) => {
+  let jsonFile = JSON.parse(resp);
+  hashtags = jsonFile;
+  
+})
+
+console.log(hashtags)
 /*
   Calculates font size for each tag
 */
@@ -175,3 +199,4 @@ cloudTags.forEach((node) => {
     }
   })
 })
+
