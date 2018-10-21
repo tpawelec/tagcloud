@@ -1,7 +1,6 @@
 /*
 TODO:
 
-- zwiększyć ilość wystąpienia tagu po dodaniu
 - xml albo json
 */
 
@@ -11,6 +10,8 @@ const addButton = document.querySelector("#addButton");
 const sendButton = document.querySelector("#sendButton");
 const suggestions = document.querySelector("#suggestions");
 const tagList = document.querySelector("#tagList");
+let cloudTags;
+
 
 let basicFontSize = 14;
 let htmlContent = '';
@@ -31,10 +32,11 @@ function calculateFontSize(frequency) {
 function generateHashCloud() {
   htmlContent='';
     for(let i = 0; i < hashtags.length; i++) {
-    htmlContent += `<a href="#" class="hashtags__tag hashtags__tag--size${calculateFontSize(hashtags[i].number)}" id='${hashtags[i].tag}'}>${hashtags[i].tag}</a>`;
+    htmlContent += `<a href="#" class="hashtags__tag hashtags__tag--size${calculateFontSize(hashtags[i].number)}" id="${hashtags[i].tag}">${hashtags[i].tag}</a>`;
     }
 
     hashtagContainer.innerHTML = htmlContent;
+    cloudTags = hashtagContainer.querySelectorAll("a");
 }
 
 /*
@@ -53,8 +55,6 @@ function addExistingTag(tagName) {
   selectedTags.push(tagName);
   suggestions.innerHTML = '';
   tagInput.value = '';
-
-  console.log(selectedTags);
 }
 
 /*
@@ -71,11 +71,9 @@ function addNewTag(newTag) {
   let html = '';
   tagInput.value = '';
   if(selectedTags.indexOf(newTag) == -1) {
-    hashtags.push({tag: newTag, number: 1});
+    hashtags.push({tag: newTag, number: 0});
     addExistingTag(newTag.toLowerCase());
   }
-
-  console.log(selectedTags);
 }
 
 
@@ -111,6 +109,11 @@ function displayMatches(evt) {
       addNewTag(tagInput.value.toLowerCase());
     } else {
       addExistingTag(tagInput.value.toLowerCase())
+      hashtags.forEach((tagElement) => {
+        if(tagElement.tag == tagInput.value.toLowerCase()) {
+          tagElement.number++;
+        }
+      })
     }
   } else {
     matchArray = findMatches(tagInput.value, hashtags);
@@ -126,7 +129,6 @@ function displayMatches(evt) {
   suggestions.innerHTML = html;
 }
 
-generateHashCloud();
 
 tagInput.addEventListener('change', (e) => displayMatches(e));
 tagInput.addEventListener('keyup', (e) => displayMatches(e));
@@ -141,14 +143,8 @@ document.addEventListener('mouseup', (e) => {
   if(e.target.classList.contains("close")) {
     e.target.parentNode.remove();
     selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
-    console.log(selectedTags);
   } else if(e.target.classList.contains("suggestions__tag-name")) {
-    console.log("aasd")
     if(selectedTags.indexOf(e.target.innerText) == -1) {
-      /* const html = `<p class="tag-element" id="selectedList-${e.target.innerText}">${e.target.innerText.toLowerCase()}<span class="close">&times</span></p>`;
-      tagList.innerHTML += html;
-      selectedTags.push(e.target.innerText.toLowerCase());
-      suggestions.innerHTML = ''; */
       addExistingTag(e.target.innerText.toLowerCase());
     }
     tagInput.value = '';
@@ -157,5 +153,25 @@ document.addEventListener('mouseup', (e) => {
 });
 sendButton.addEventListener('click', () => {
   tagList.innerHTML = '';
+  for(let i = 0; i < selectedTags.length; i++) {
+    hashtags.forEach((tagItem) => {
+      if(tagItem.tag == selectedTags[i]) {
+        tagItem.number++;
+      }
+    })
+  }
+  selectedTags.length = 0;
   generateHashCloud();
+  
+})
+
+generateHashCloud();
+
+cloudTags.forEach((node) => {
+  node.addEventListener("click", (evt) => {
+    if(!selectedTags.includes(evt.target.id)) {
+      tagList.innerHTML += `<p class="tag-element" id="selectedList-${evt.target.id}">${evt.target.id}<span class="close">&times</span></p>`;
+      selectedTags.push(evt.target.id);
+    }
+  })
 })
