@@ -23,10 +23,11 @@ let hashtags;
 /*
   Load local json file
 */
+
 function loadJSON(callback) {
   let xmlObj = new XMLHttpRequest();
   xmlObj.overrideMimeType("application/json");
-  xmlObj.open('GET', 'tags.json', false);
+  xmlObj.open('GET', 'tags.json', true);
   xmlObj.onreadystatechange = _ => {
     if(xmlObj.readyState == 4 && xmlObj.status == "200") {
       callback(xmlObj.responseText);
@@ -38,10 +39,10 @@ function loadJSON(callback) {
 loadJSON((resp) => {
   let jsonFile = JSON.parse(resp);
   hashtags = jsonFile;
-  
+  generateHashCloud();
+  createListeners();
 })
 
-console.log(hashtags)
 /*
   Calculates font size for each tag
 */
@@ -128,7 +129,7 @@ function displayMatches(evt) {
   let matchArray = [];
   if(evt.which == 8 && tagInput.value.length == 0) {
     html = '';
-  } else if(evt.which == 13) {
+  } else if(evt.which == 13 && tagInput.value.length > 0) {
     if(!containsTag(tagInput.value, hashtags)) {
       addNewTag(tagInput.value.toLowerCase());
     } else {
@@ -153,50 +154,61 @@ function displayMatches(evt) {
   suggestions.innerHTML = html;
 }
 
-
-tagInput.addEventListener('change', (e) => displayMatches(e));
-tagInput.addEventListener('keyup', (e) => displayMatches(e));
-addButton.addEventListener('click', () => {
-  if(containsTag(tagInput.value, hashtags)) {
-    addExistingTag(tagInput.value.toLowerCase())
-  } else {
-    addNewTag(tagInput.value);
-  }
-});
-document.addEventListener('mouseup', (e) => {
-  if(e.target.classList.contains("close")) {
-    e.target.parentNode.remove();
-    selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
-  } else if(e.target.classList.contains("suggestions__tag-name")) {
-    if(selectedTags.indexOf(e.target.innerText) == -1) {
-      addExistingTag(e.target.innerText.toLowerCase());
+function createListeners() {
+  tagInput.addEventListener('change', (e) => displayMatches(e));
+  tagInput.addEventListener('keyup', (e) => displayMatches(e));
+  addButton.addEventListener('click', () => {
+    if(tagInput.value.length > 0) {
+    if(containsTag(tagInput.value, hashtags)) {
+      addExistingTag(tagInput.value.toLowerCase())
+    } else {
+      addNewTag(tagInput.value);
     }
-    tagInput.value = '';
   }
+  });
+  document.addEventListener('mouseup', (e) => {
+    if(e.target.classList.contains("close")) {
+      e.target.parentNode.remove();
+      selectedTags.splice(selectedTags.indexOf(e.target.parentNode.id.slice(13)), 1);
+    } else if(e.target.classList.contains("suggestions__tag-name")) {
+      if(selectedTags.indexOf(e.target.innerText) == -1) {
+        addExistingTag(e.target.innerText.toLowerCase());
+      }
+      tagInput.value = '';
+    }
 
-});
-sendButton.addEventListener('click', () => {
-  tagList.innerHTML = '';
-  for(let i = 0; i < selectedTags.length; i++) {
-    hashtags.forEach((tagItem) => {
-      if(tagItem.tag == selectedTags[i]) {
-        tagItem.number++;
+  });
+  sendButton.addEventListener('click', () => {
+    tagList.innerHTML = '';
+    for(let i = 0; i < selectedTags.length; i++) {
+      hashtags.forEach((tagItem) => {
+        if(tagItem.tag == selectedTags[i]) {
+          tagItem.number++;
+        }
+      })
+    }
+    selectedTags.length = 0;
+    generateHashCloud();
+    
+    let xhr = new XMLHttpRequest();
+    let str_json = "json_string=" + JSON.stringify(hashtags);
+    xhr.open('POST', 'save.php', true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.onload = _ => {
+      console.log(xhr.responseText);
+    }
+    xhr.send(str_json);
+  })
+
+  //generateHashCloud();
+
+  cloudTags.forEach((node) => {
+    node.addEventListener("click", (evt) => {
+      if(!selectedTags.includes(evt.target.id)) {
+        tagList.innerHTML += `<p class="tag-element" id="selectedList-${evt.target.id}">${evt.target.id}<span class="close">&times</span></p>`;
+        selectedTags.push(evt.target.id);
       }
     })
-  }
-  selectedTags.length = 0;
-  generateHashCloud();
-  
-})
-
-generateHashCloud();
-
-cloudTags.forEach((node) => {
-  node.addEventListener("click", (evt) => {
-    if(!selectedTags.includes(evt.target.id)) {
-      tagList.innerHTML += `<p class="tag-element" id="selectedList-${evt.target.id}">${evt.target.id}<span class="close">&times</span></p>`;
-      selectedTags.push(evt.target.id);
-    }
   })
-})
 
+}
